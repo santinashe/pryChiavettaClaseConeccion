@@ -18,22 +18,22 @@ namespace pryChiavettaClaseConeccion
         public frmPrincipal()
         {
             InitializeComponent();
-            // Estado inicial
+       
             lblEstado.Text = "Estado: Desconectado";
         }
 
-        // Evento: Buscar archivo de base de datos
+        // Evento Buscar archivo de base de datos
         private void btnBuscar_Click(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog())
+            using (var x = new OpenFileDialog())
             {
-                ofd.Filter = "Access Databases|*.accdb;*.mdb|All files|*.*";
-                ofd.Title = "Seleccionar archivo de base de datos Access";
-                ofd.Multiselect = false;
+                x.Filter = "Access Databases|*.accdb;*.mdb|All files|*.*";
+                x.Title = "Seleccionar archivo de base de datos Access";
+                x.Multiselect = false;
 
-                if (ofd.ShowDialog() == DialogResult.OK)
+                if (x.ShowDialog() == DialogResult.OK)
                 {
-                    currentDbPath = ofd.FileName;
+                    currentDbPath = x.FileName;
                     txtDbPath.Text = currentDbPath;
                     lblEstado.Text = "Estado: Archivo seleccionado";
                     cmbTablas.Items.Clear();
@@ -64,7 +64,7 @@ namespace pryChiavettaClaseConeccion
             try
             {
                 // Obtener tablas en tarea separada
-                var tablas = await Task.Run(() => AccessHelper.GetTableNames(currentDbPath));
+                var tablas = await Task.Run(() => ClaseConeccion.GetTableNames(currentDbPath));
 
                 if (tablas == null || tablas.Count == 0)
                 {
@@ -90,7 +90,7 @@ namespace pryChiavettaClaseConeccion
             }
         }
 
-        // Evento: Selección de tabla -> cargar datos
+        // Event Selección de tabla  cargar datos
         private async void cmbTablas_SelectedIndexChanged(object sender, EventArgs e)
         {
             var tabla = cmbTablas.SelectedItem as string;
@@ -101,9 +101,10 @@ namespace pryChiavettaClaseConeccion
 
             try
             {
-                var dt = await Task.Run(() => AccessHelper.GetTableData(currentDbPath, tabla));
+                
+                var dt = await Task.Run(() => ClaseConeccion.GetTableData(currentDbPath, tabla));
                 dgvDatos.DataSource = dt;
-                lblEstado.Text = $"Estado: Mostrando {dt.Rows.Count} registros de {tabla}";
+                lblEstado.Text = $"Estado: Mostrando {dt.Rows.Count} registros de {tabla}";//carga tbl selc
             }
             catch (Exception ex)
             {
